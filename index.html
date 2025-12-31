@@ -1,129 +1,166 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="tr">
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width,initial-scale=1">
-	<title>Tuğçe'm</title>
-	<style>
-		:root{--bg:#1b0a12;--accent:#ff6b8a}
-		*{box-sizing:border-box}
-		html,body{height:100%;margin:0}
-		body{background:var(--bg);display:grid;place-items:center;font-family:system-ui,Segoe UI,Roboto,Arial;color:white}
-		.stage{width:min(720px,90vw);height:min(720px,90vw);display:grid;place-items:center;position:relative}
-		svg{width:100%;height:100%;overflow:visible}
-		.shape{position:absolute;left:0;top:0;width:100%;height:100%;display:grid;place-items:center;transition:opacity .6s ease,transform .6s ease;opacity:0;transform:scale(.95)}
-		.shape.show{opacity:1;transform:scale(1)}
-		.center{width:55%;height:55%;display:block}
-		/* Center the final text both horizontally and vertically, responsive */
-		.text{position:absolute;top:50%;left:50%;width:90%;max-width:720px;transform:translate(-50%,-50%) scale(.98);text-align:center;font-size:clamp(1.6rem,7vw,3.6rem);line-height:1.05;letter-spacing:0.02em;opacity:0;transition:opacity .6s ease,transform .6s ease,color .4s ease;text-shadow:0 6px 22px rgba(0,0,0,0.45);color:#ffdbe6;padding:0 8px}
-		.text.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
-		/* Styled replay button for mobile friendliness */
-		.replay{position:absolute;right:12px;bottom:12px;background:linear-gradient(135deg,#ff6b8a,#ff9bb3);border:0;color:white;padding:12px 14px;border-radius:12px;cursor:pointer;font-size:14px;box-shadow:0 8px 24px rgba(255,107,138,0.18);backdrop-filter:blur(6px)}
-		.replay:active{transform:translateY(1px)}
-		.replay:hover{box-shadow:0 12px 30px rgba(255,107,138,0.24)}
-		@media(max-width:420px){
-			.replay{right:10px;bottom:10px;padding:10px 12px;border-radius:10px;font-size:13px}
-			.text{font-size:clamp(1.4rem,9vw,2.6rem)}
-		}
-		/* subtle float */
-		@keyframes floaty{0%{transform:translateY(0)}50%{transform:translateY(-6px)}100%{transform:translateY(0)}}
-		.float{animation:floaty 3.6s ease-in-out infinite}
-	</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seni Seviyorum</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Orbitron:wght@500&family=Poppins:wght@300&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --pink-bg: #fff0f3;
+            --pink-accent: #ff4d6d;
+            --pink-dark: #c9184a;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #fff0f3 0%, #ffccd5 100%);
+            font-family: 'Poppins', sans-serif;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 50px;
+            backdrop-filter: blur(5px);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 20px 40px rgba(255, 77, 109, 0.1);
+        }
+
+        /* Saat Stili */
+        #clock {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 6rem;
+            color: var(--pink-accent);
+            text-shadow: 0 0 25px rgba(255, 77, 109, 0.4);
+            transition: all 1s ease;
+        }
+
+        /* Mesaj Stili */
+        #message {
+            display: none;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .love-text {
+            font-family: 'Dancing Script', cursive;
+            font-size: 4.5rem;
+            color: var(--pink-dark);
+            line-height: 1.2;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Aktifleştiğinde */
+        .celebrate #clock {
+            display: none;
+        }
+
+        .celebrate #message {
+            display: block;
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Küçük ipucu (Sadece senin bilmen için çok silik) */
+        .hint {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            font-size: 0.7rem;
+            color: rgba(0,0,0,0.05);
+            user-select: none;
+        }
+    </style>
 </head>
-<body>
-	<div class="stage" id="stage" aria-hidden="false">
-		<!-- Heart -->
-		<div class="shape show" id="heart">
-			<svg viewBox="0 0 100 100" class="center float">
-				<path d="M50 84s-26-15-34-24C6 45 18 24 35 30c6 2 11 7 15 12 4-5 9-10 15-12 17-6 29 15 19 30-8 9-34 24-34 24z" fill="url(#g)" stroke="rgba(255,255,255,0.08)" stroke-width="0.6"/>
-				<defs>
-					<linearGradient id="g" x1="0" x2="1">
-						<stop offset="0" stop-color="#ff6b8a"/>
-						<stop offset="1" stop-color="#ff9bb3"/>
-					</linearGradient>
-				</defs>
-			</svg>
-		</div>
+<body id="body">
 
-		<!-- Flower (rose-like) -->
-		<div class="shape" id="flower">
-			<svg viewBox="0 0 100 100" class="center float">
-				<g fill="#ff9bb3" stroke="#ff6b8a" stroke-width="0.6">
-					<circle cx="50" cy="46" r="8" fill="#ff6b8a"/>
-					<circle cx="50" cy="34" r="6"/>
-					<circle cx="42" cy="40" r="5"/>
-					<circle cx="58" cy="40" r="5"/>
-					<rect x="47" y="52" width="6" height="18" rx="3" fill="#7a2e3b"/>
-				</g>
-			</svg>
-		</div>
+    <div class="container" id="mainContainer">
+        <div id="clock">00:00:00</div>
 
-		<!-- Envelope with heart -->
-		<div class="shape" id="envelope">
-			<svg viewBox="0 0 100 100" class="center float">
-				<rect x="12" y="30" width="76" height="40" rx="6" fill="#ffdbe6" stroke="#ff6b8a" stroke-width="1.2"/>
-				<path d="M12 30 L50 56 L88 30" fill="none" stroke="#ff6b8a" stroke-width="1.6"/>
-				<g transform="translate(40,36)">
-					<path d="M10 8c0-2.8 2.2-5 5-5s5 2.2 5 5c0 4-5 7-5 7s-5-3-5-7z" fill="#ff6b8a"/>
-				</g>
-			</svg>
-		</div>
+        <div id="message">
+            <div class="love-text">
+                İyi ki doğdun bitanem!<br>
+                Seni çok seviyorum ❤️
+            </div>
+        </div>
+    </div>
 
-		<!-- Sparkles -->
-		<div class="shape" id="sparkle">
-			<svg viewBox="0 0 100 100" class="center float">
-				<g fill="#fff0f6" stroke="#ffd0e0" stroke-width="0.4">
-					<polygon points="50,12 53,28 69,31 55,40 59,56 50,46 41,56 45,40 31,31 47,28"/>
-					<circle cx="22" cy="22" r="3"/>
-					<circle cx="78" cy="28" r="2.5"/>
-					<circle cx="72" cy="72" r="2.8"/>
-				</g>
-			</svg>
-		</div>
+    <div class="hint">alo</div>
 
-		<div class="text" id="finalText">Seni çok seviyorum</div>
-		<button class="replay" id="replayBtn" aria-label="Yeniden oynat">Yeniden</button>
-	</div>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
-	<script>
-		(function(){
-			const seq = ['heart','flower','envelope','sparkle'];
-			const showTime = 1400;
-			let idx = 0;
-			const text = document.getElementById('finalText');
-			const replay = document.getElementById('replayBtn');
+    <script>
+        // 1. Canlı Saat Fonksiyonu
+        function updateClock() {
+            const now = new Date();
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            const s = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('clock').innerText = `${h}:${m}:${s}`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
 
-			function setVisible(id){
-				document.querySelectorAll('.shape').forEach(el=>el.classList.remove('show'));
-				const el = document.getElementById(id);
-				if(el) el.classList.add('show');
-			}
+        // 2. Gizli Tuş Takibi ("alo")
+        let buffer = "";
+        window.addEventListener('keydown', (e) => {
+            buffer += e.key.toLowerCase();
+            
+            // Sadece son 3 harfi tut
+            if (buffer.length > 3) {
+                buffer = buffer.substring(buffer.length - 3);
+            }
 
-			function play(){
-				idx = 0;
-				text.classList.remove('show');
-				setVisible(seq[0]);
-				for(let i=1;i<seq.length;i++){
-					setTimeout(((i)=>{
-						return ()=>setVisible(seq[i]);
-					})(i), i*showTime);
-				}
-				// show text after sequence
-				setTimeout(()=>{
-					document.querySelectorAll('.shape').forEach(el=>el.classList.remove('show'));
-					text.classList.add('show');
-				}, seq.length*showTime);
-			}
+            // Eğer "alo" yazıldıysa kutlamayı başlat
+            if (buffer === "alo") {
+                startCelebration();
+                buffer = ""; // Buffer'ı temizle
+            }
+        });
 
-			// autoplay on load
-			window.addEventListener('load', ()=>{ setTimeout(play, 300); });
-			// replay button
-			replay.addEventListener('click', ()=>{ play(); });
-			// also allow clicking stage to replay
-			document.getElementById('stage').addEventListener('click', (e)=>{ if(e.target.id!=='replayBtn') play(); });
-		})();
-	</script>
+        // 3. Kutlama Fonksiyonu
+        function startCelebration() {
+            const container = document.getElementById('mainContainer');
+            container.parentElement.classList.add('celebrate');
+            
+            // Konfetileri patlat
+            launchConfetti();
+        }
+
+        function launchConfetti() {
+            var duration = 15 * 1000;
+            var end = Date.now() + duration;
+
+            (function frame() {
+                confetti({
+                    particleCount: 7,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 },
+                    colors: ['#ff0a54', '#ff477e', '#ff7096']
+                });
+                confetti({
+                    particleCount: 7,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 },
+                    colors: ['#ff0a54', '#ff477e', '#ff7096']
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            }());
+        }
+    </script>
 </body>
 </html>
-
-
